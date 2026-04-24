@@ -44,11 +44,7 @@ total_times = []
 
 #User inputs for poly-alanine extraction
 extractor_path = r"TWIMExtract\jars\TWIMExtract.jar"
-# polya_raw_data_location = r"C:\Users\Austin\Documents\Grad School\One_click_CCS_calibration\Polya_raw_data\250528_POLYA_AA_A.raw"
-# polya_raw_data_location = r"C:\Users\Austin\Documents\Grad School\CIU comparison paper\Synapt raw data\251201 BSA\PolyA\251201_POLYA_FULL_AA.raw"
-# polya_raw_data_location = r"C:\Users\Austin\Documents\Grad School\One_click_CCS_calibration\Polya_raw_data\251001_POLA_FULL_AA.raw"
 polya_raw_data_location = r"C:\Users\Austin\Documents\Grad School\One_click_CCS_calibration\Polya_raw_data\251201_POLYA_FULL_AB.raw"
-polya_raw_data_location = r"D:\260206 New BSA\260206_POLYA.raw"
 polya_rangefiles_location = r"Polya_range_files\*.txt" 
 polya_out_folder = '\\' + polya_raw_data_location.split('\\')[-1][:-4] #dont change this one
 polya_outputfile_location = os.getcwd() + '\\Polya_raw_data' + polya_out_folder
