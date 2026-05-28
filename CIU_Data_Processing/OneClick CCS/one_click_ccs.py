@@ -169,7 +169,7 @@ for line in gaussians_file:
             continue
         if data_count == 1:
             line = line[0].split(',')
-            
+            polya = line[0].split('#')[1][:-4]
             try:
                 possibles = [float(c) for c in line[2:]]
                 centroid = min(possibles)
