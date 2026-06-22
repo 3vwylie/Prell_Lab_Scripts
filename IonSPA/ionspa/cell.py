@@ -81,7 +81,7 @@ class cellclass():
             rho = P * 1e5 * self.Mg / const.kB / T      # assumes constant T
         else:               # rho given, pressure absent
             out = f'pressure {P} or rho {rho} must be specified.'
-            print(out)
+            # print(out)
             P = rho * 1e-5 * T * const.kB / self.Mg
         z0 = pdict.get('z0',0.0)
         E = pdict.get('E', None) or pdict.get('dV', 7) / (self.L - z0) # priority is to specify E directly, otherwise use dV/L, with fallback
@@ -302,11 +302,19 @@ class fullAcell(cellclass):
         # self.rho2 = pdict.get('rho2', 4.1e-7)
         T = pdict['T']
         self.rho0 = pdict.get('rho', None)   
-        self.rho1 = pdict.get('rho2', None)  
-        self.rho2 = pdict.get('rho3', None)  
+        self.rho1 = pdict.get('rho1', None)  
+        self.rho2 = pdict.get('rho2', None)  
         self.P0 = pdict.get('pressure1', None)
         self.P1 = pdict.get('pressure2', None)
         self.P2 = pdict.get('pressure3', None)
+        
+        # print()
+        # print('hhiiiiiiiiiii')
+        # print(self.rho0)
+        # print(self.rho1)
+        # print(self.rho2)
+        # print(flush=True)
+        
         self.rho = self.rho0
         test = self.P0 or self.rho0
         if test is None:    # both not supplied
@@ -321,8 +329,7 @@ class fullAcell(cellclass):
         else:               # rho given, pressure absent
             self.P0 = self.rho0 * 1e-5 * T * const.kB / self.Mg
             self.P1 = self.rho1 * 1e-5 * T * const.kB / self.Mg
-            self.P2 = self.rho1 * 1e-5 * T * const.kB / self.Mg
-        
+            self.P2 = self.rho2 * 1e-5 * T * const.kB / self.Mg
         
         
         self.Ez = self.wEz
@@ -344,6 +351,9 @@ class fullAcell(cellclass):
         
         
     def _rho(self, z):
+        
+        
+        
         
         if z < 0.182:
             rhoz = self.rho0
@@ -766,7 +776,7 @@ class WAVEcell4(cellclass):
                 if Emag == 0:
                     continue
                 de1 += (self.c**2)*Emag/((zz - zloc)**2 + self.c**2)
-            # print('Using Emag formula')
+            print('Using Emag formula')
         
         
         
