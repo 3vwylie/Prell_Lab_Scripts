@@ -1,0 +1,16 @@
+{    
+    "cellfilename": "IonSPA_1.0_inputs\\Synapt_CIU_high.txt",
+    "ionfilename": "IonSPA_1.0_inputs\\Myo_8_ion.txt",
+    "exp": {
+        "folder": "IonSPA_1.0_expdata",
+        "file": "Myo_8_high_CIU_A.csv"
+    },
+    "tmax": 0.005,
+    "plotvf": 1,
+    "plottT": 0,
+    "Nrepeats": 300,
+    "dhds_start": [
+        220,
+        247
+    ]
+}
