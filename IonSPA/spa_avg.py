@@ -75,11 +75,11 @@ def main(**args):
     May add other params as needed for plot selection, etc.
     Returns a logger object with values at each collision.
     """
-    print('in main():')
+    # print('in main():')
 
-    for arg in args:
-        print(f'{arg}: {args[arg]}')
-    print()
+    # for arg in args:
+        # print(f'{arg}: {args[arg]}')
+    # print()
 
     # extract input parameters
     celld = args.get('cell', defcell)
@@ -107,9 +107,9 @@ def main(**args):
     mgamu = ccell.Mg / mamu # gas mass in Daltons
     mg = ccell.Mg
 
-    print('celld:', celld)
-    print(f'cell class:\n  {ccell}')
-    print(f'Cellparms\n   Mgamu: {mgamu}\n   Lcell: {Lcell}\n   Ecell: {Ecell}\n   Tcell: {Tg}\n   rhog: {rho_g}\n   Voff: {cellVoff}\n')
+    # print('celld:', celld)
+    # print(f'cell class:\n  {ccell}')
+    # print(f'Cellparms\n   Mgamu: {mgamu}\n   Lcell: {Lcell}\n   Ecell: {Ecell}\n   Tcell: {Tg}\n   rhog: {rho_g}\n   Voff: {cellVoff}\n')
 
     # Get values we use from the ion definition
     Mion = iond.get('mass', 17.594)      # 17.594 kg/mol for myo9, 
@@ -122,21 +122,21 @@ def main(**args):
     dof = 3 * numatoms - 6
 #    cion.hcprofileobject.buildfunctions(iond['hcprofname'], dof=dof)
 
-    print('iond: ', iond)
-    print(f'ion class:\n  {cion}')
-    print(f'ion parms\n   Miamu: {Mion*1000}\n   z: {z}\n   natoms: {numatoms}\n   CCS: {ccs/1e-18}\n   Ti: {Tion0}\n   hctype: {hcprofname}')
+    # print('iond: ', iond)
+    # print(f'ion class:\n  {cion}')
+    # print(f'ion parms\n   Miamu: {Mion*1000}\n   z: {z}\n   natoms: {numatoms}\n   CCS: {ccs/1e-18}\n   Ti: {Tion0}\n   hctype: {hcprofname}')
 
     injectV = [iV + cellVoff for iV in injectV]
-    print(f'injectV offset by {cellVoff} to {injectV} using cell[Voffset]\n')
+    # print(f'injectV offset by {cellVoff} to {injectV} using cell[Voffset]\n')
 
-    print(f'Calculation option is {option}')
-    print(f'Size scaling is {sizefactor}')
-    print(f'Density scaling is {Ngfactor}\n')
+    # print(f'Calculation option is {option}')
+    # print(f'Size scaling is {sizefactor}')
+    # print(f'Density scaling is {Ngfactor}\n')
 
     # Some initial calculations not expected to change during a run
     vgmode = np.sqrt(2*kB*Tg/mg)
     vgmean = np.sqrt(4/np.pi)*vgmode
-    print(f'vgmode: {vgmode:0.1f} m/s      vgmean: {vgmean:0.1f} m/s')
+    # print(f'vgmode: {vgmode:0.1f} m/s      vgmean: {vgmean:0.1f} m/s')
 
     KE = z*qe*injectV[0]       # ion kinetic energy, in J
     size = sizefactor
@@ -154,7 +154,7 @@ def main(**args):
         freet = 1/(ng * ccs * meanvrel)
         return freet
 
-    print(f'Initial meanfreet: {meanfreet(Ng, KE):0.2e}\n')
+    # print(f'Initial meanfreet: {meanfreet(Ng, KE):0.2e}\n')
 
     Vlogger = vlogger(injV=None, KE=None, Ui=None, T=None)
 
@@ -183,7 +183,19 @@ def main(**args):
         Vlogger.append(injV=injectv, KE=KE/qe, Ui=ui0/qe, T=Ti)
         tlogger = vlogger(coll=0, t=time, zp=0.0, KE=KE/qe, ui=ui0/qe, Ti=Ti0, chi=chi0)
 
+        time_cut = []
+        Temp_cut = []
+        KE_cut = []
         while (zpos < Lcell):           # and collision < 2E7):
+            if (KE) / (z) < 0.5 and abs(Ti - Tg)/Tg < 0.025:
+                time_cut.append(time)
+                Temp_cut.append(Ti)
+                KE_cut.append(KE/qe)
+                
+                if (time_cut[-1] - time_cut[0]) > 0.0005:
+                    #print('broken here')
+                    #print(time_cut[-1])
+                    break 
             Ecell = ccell.Ez(zpos, t=0)
             Ng = Ngfactor * ccell.rho(zpos)/mg      # allow for density change within the cell
             collision += 1
@@ -227,8 +239,8 @@ def main(**args):
             Ti = Tin
             KEeVz = KEn/qe/z
             KEsz = tlogger.KE[-1]/z
-            if KEeVz < 1.0 and KEsz > 1.0:
-                print(f'KE per charge dropped below 1.0 at {zpos}')
+            # if KEeVz < 1.0 and KEsz > 1.0:
+                # print(f'KE per charge dropped below 1.0 at {zpos}')
 
             tlogger.append(coll=collision, t=time, zp=zpos, KE=KE/qe, ui=ui/qe, Ti=Ti, chi=chi)
             ### End of collision step loop
@@ -260,7 +272,7 @@ def main(**args):
         #plt.plot(collisions,KEs)
 
         if False:
-            print('plot options', xaxis, yaxis, plotfile)
+            # print('plot options', xaxis, yaxis, plotfile)
             # possible xaxis, yaxis values might be coll, t, zp, KE, ui, Ti, chi
             # add other possible x values options here
             if xaxis == 't':
@@ -325,96 +337,96 @@ def main(**args):
         #plt.show()
 
 
-        ## Post analysis section
-        maxdeltat = max(tlogger.Ti)-Ti0
-        maxdeltau = (max(tlogger.ui)-tlogger.ui[0])
-        maxreldeltau = maxdeltau/tlogger.ui[0]
-        driftvel = np.sqrt(2*(np.sum(tlogger.KE[-101:-1])/100*qe-3/2*kB*Tg)/mi)
-        postd['maxdT'] = maxdeltat
-        postd['maxdU'] = maxdeltau
-        postd['maxreldU'] = maxreldeltau
-        postd['vdrift'] = driftvel
-#        print(f'maximum deltaT: {maxdeltat:0.02f} K, maximum deltaU: {maxdeltau:0.01f} eV, max deltaU relative to init U: {maxreldeltau:0.01f}, sim drift velocity: {driftvel:0.03f} m/s')
+#         ## Post analysis section
+#         maxdeltat = max(tlogger.Ti)-Ti0
+#         maxdeltau = (max(tlogger.ui)-tlogger.ui[0])
+#         maxreldeltau = maxdeltau/tlogger.ui[0]
+#         # driftvel = np.sqrt(2*(np.sum(tlogger.KE[-101:-1])/100*qe-3/2*kB*Tg)/mi)
+#         postd['maxdT'] = maxdeltat
+#         postd['maxdU'] = maxdeltau
+#         postd['maxreldU'] = maxreldeltau
+#         # postd['vdrift'] = driftvel
+# #        print(f'maximum deltaT: {maxdeltat:0.02f} K, maximum deltaU: {maxdeltau:0.01f} eV, max deltaU relative to init U: {maxreldeltau:0.01f}, sim drift velocity: {driftvel:0.03f} m/s')
         
-        #MSvdrift is the classic Mason-Schamp result
-        MSvdrift = 3*z*qe/(16*Ng)*Ecell*np.sqrt(2*np.pi*(mi+mg)/(mi*mg)/(kB*Tg))/ccs
-        #MSmodvdrift is the modified Mason-Schamp equation, from solving Eq 35 in Revercomb and Mason, Anal Chem, 1975
-        b = 3*kB*Tg/mg
-        c = -1/mg*(mg+mi)/(mg*mi)*(z*qe*Ecell/(Ng*ccs))**2
-        MSmodvdrift = np.sqrt(-b/2 + 1/2*np.sqrt(b**2-4*c))
-#        MSmodvdrifts.append(MSmodvdrift)
-        EoverN = Ecell/Ng*1E21 #field strength in Townsend, 1E-21 V/m^2
-        maxdelui = max(tlogger.ui)-tlogger.ui[0]
-        maxeff = maxdelui/(z*injectv)
+#         #MSvdrift is the classic Mason-Schamp result
+#         MSvdrift = 3*z*qe/(16*Ng)*Ecell*np.sqrt(2*np.pi*(mi+mg)/(mi*mg)/(kB*Tg))/ccs
+#         #MSmodvdrift is the modified Mason-Schamp equation, from solving Eq 35 in Revercomb and Mason, Anal Chem, 1975
+#         b = 3*kB*Tg/mg
+#         c = -1/mg*(mg+mi)/(mg*mi)*(z*qe*Ecell/(Ng*ccs))**2
+#         MSmodvdrift = np.sqrt(-b/2 + 1/2*np.sqrt(b**2-4*c))
+# #        MSmodvdrifts.append(MSmodvdrift)
+#         EoverN = Ecell/Ng*1E21 #field strength in Townsend, 1E-21 V/m^2
+#         maxdelui = max(tlogger.ui)-tlogger.ui[0]
+#         maxeff = maxdelui/(z*injectv)
 
-        postd['MSvdrift'] = MSvdrift
-        postd['MSmodvdrift'] = MSmodvdrift
-        postd['EoverN'] = EoverN
-        postd['maxdelui'] = maxdelui
-        postd['maxeff'] = maxeff
-        print(f'E/N is {EoverN:0.2f} [Td]')
-#        print(f'MSvdrift: {MSvdrift:0.3f}   MSmodvdrift: {MSmodvdrift:0.3f}   EoverN: {EoverN:0.2f} Td')
-#        print(f'maximum delta ui: {maxdelui:0.2f}   maxefficiency = {maxeff:0.4f}')
+#         postd['MSvdrift'] = MSvdrift
+#         postd['MSmodvdrift'] = MSmodvdrift
+#         postd['EoverN'] = EoverN
+#         postd['maxdelui'] = maxdelui
+#         postd['maxeff'] = maxeff
+#         # print(f'E/N is {EoverN:0.2f} [Td]')
+# #        print(f'MSvdrift: {MSvdrift:0.3f}   MSmodvdrift: {MSmodvdrift:0.3f}   EoverN: {EoverN:0.2f} Td')
+# #        print(f'maximum delta ui: {maxdelui:0.2f}   maxefficiency = {maxeff:0.4f}')
         
-#        thermalv = np.sqrt(3*kB*Tg/mi)
-#        thermalvs = []
-#        for i in range(len(thermalvs)):
-#            thermalvs.append(thermalv)
-        #plt.plot(Ngfactor,thermalvs)
-    #    ratios = []
-    #    for i in range(len(Ngfactor)):
-    #        ratios.append(vdrifts[i]/MSmodvdrifts[i]) 
-    #    #plt.plot(Ngfactor,ratios)
+# #        thermalv = np.sqrt(3*kB*Tg/mi)
+# #        thermalvs = []
+# #        for i in range(len(thermalvs)):
+# #            thermalvs.append(thermalv)
+#         #plt.plot(Ngfactor,thermalvs)
+#     #    ratios = []
+#     #    for i in range(len(Ngfactor)):
+#     #        ratios.append(vdrifts[i]/MSmodvdrifts[i]) 
+#     #    #plt.plot(Ngfactor,ratios)
         
-        C=5.0*dof # assumed constant heat capacity
-        # parameters from analytical solution work-up
-        #old/incorrect parameters (only h is wrong)
-        #a=-3*chi0*kB*NA/(2*C)
-        #b=chi0*mg/mi
-        #c=3/2*chi0*kB*Tg
-        #h=3/2*chi0*kB*NA/C*mg/mi
-        #k=-chi0/mi*(ma+mg-mg*ma/mi)
-        #l=3/2*chi0*kB*Tg*ma/mi
+#         C=5.0*dof # assumed constant heat capacity
+#         # parameters from analytical solution work-up
+#         #old/incorrect parameters (only h is wrong)
+#         #a=-3*chi0*kB*NA/(2*C)
+#         #b=chi0*mg/mi
+#         #c=3/2*chi0*kB*Tg
+#         #h=3/2*chi0*kB*NA/C*mg/mi
+#         #k=-chi0/mi*(ma+mg-mg*ma/mi)
+#         #l=3/2*chi0*kB*Tg*ma/mi
         
-        #new/correct parameters
-        a = -3*chi0*kB*NA/(2*C)
-        b = chi0*mg/mi
-        c = 3/2*chi0*kB*Tg
-        h = 3/2*(ma/mi)*(1-chi0)*kB*NA/C
-        k = -chi0/mi*(ma+mg-mg*ma/mi)
-        l = 3/2*chi0*kB*Tg*ma/mi
+#         #new/correct parameters
+#         a = -3*chi0*kB*NA/(2*C)
+#         b = chi0*mg/mi
+#         c = 3/2*chi0*kB*Tg
+#         h = 3/2*(ma/mi)*(1-chi0)*kB*NA/C
+#         k = -chi0/mi*(ma+mg-mg*ma/mi)
+#         l = 3/2*chi0*kB*Tg*ma/mi
         
-        lamplus=1/2*(a+k+np.sqrt((a-k)**2+4*b*h)) # less negative rate constant w.r.t. collision number, cooling, very nearly = a under many conditions
-        lamminus=1/2*(a+k-np.sqrt((a-k)**2+4*b*h)) # more negative rate constant w.r.t. collision number, heating, very nearly = k under many conditions
-        cplus = (b*(tlogger.KE[0]-tlogger.KE[-1])+(a-lamminus)*(tlogger.ui[0]-tlogger.ui[-1]))/(lamplus-lamminus)*qe
-        cminus = -(b*(tlogger.KE[0]-tlogger.KE[-1])+(a-lamplus)*(tlogger.ui[0]-tlogger.ui[-1]))/(lamplus-lamminus)*qe
-        zmax = np.log(-cminus*lamminus/(cplus*lamplus))/(lamplus-lamminus)
-#        print(f'zmax = {zmax}')
-        umaxapp=(cplus*(-cminus*lamminus/(cplus*lamplus))**(lamplus/(lamplus-lamminus))+cminus*(-cminus*lamminus/(cplus*lamplus))**(lamminus/(lamplus-lamminus)))/qe+tlogger.ui[-1]
-#        print(f'umaxapp: {umaxapp}')
-        postd['zmax'] = zmax
-        postd['umaxapp'] = umaxapp
+#         lamplus=1/2*(a+k+np.sqrt((a-k)**2+4*b*h)) # less negative rate constant w.r.t. collision number, cooling, very nearly = a under many conditions
+#         lamminus=1/2*(a+k-np.sqrt((a-k)**2+4*b*h)) # more negative rate constant w.r.t. collision number, heating, very nearly = k under many conditions
+#         cplus = (b*(tlogger.KE[0]-tlogger.KE[-1])+(a-lamminus)*(tlogger.ui[0]-tlogger.ui[-1]))/(lamplus-lamminus)*qe
+#         cminus = -(b*(tlogger.KE[0]-tlogger.KE[-1])+(a-lamplus)*(tlogger.ui[0]-tlogger.ui[-1]))/(lamplus-lamminus)*qe
+#         zmax = np.log(-cminus*lamminus/(cplus*lamplus))/(lamplus-lamminus)
+# #        print(f'zmax = {zmax}')
+#         umaxapp=(cplus*(-cminus*lamminus/(cplus*lamplus))**(lamplus/(lamplus-lamminus))+cminus*(-cminus*lamminus/(cplus*lamplus))**(lamminus/(lamplus-lamminus)))/qe+tlogger.ui[-1]
+# #        print(f'umaxapp: {umaxapp}')
+#         postd['zmax'] = zmax
+#         postd['umaxapp'] = umaxapp
 
-#        uinfapp=C*Tg/(1-mg/mi)/NA # this will obviously be too high if it uses C at room temperature
+# #        uinfapp=C*Tg/(1-mg/mi)/NA # this will obviously be too high if it uses C at room temperature
 
-#        uapps=[]
-#        for Z in range(len(tlogger.coll)):
-#            uapps.append((cplus*np.exp(lamplus*Z)+cminus*np.exp(lamminus*Z))/qe+tlogger.ui[0]-(cplus+cminus)/qe)
+# #        uapps=[]
+# #        for Z in range(len(tlogger.coll)):
+# #            uapps.append((cplus*np.exp(lamplus*Z)+cminus*np.exp(lamminus*Z))/qe+tlogger.ui[0]-(cplus+cminus)/qe)
 
-        #plt.subplot(1,4,1)
-        #plt.plot(tlogger.z,uapps)
-        fplus = (lamplus-a)*cplus/b
-        fminus = (lamminus-a)*cminus/b
-        KEapps=[]
-        KEinfapp=3/2*kB*Tg*mi/(mi-mg)
-        for Z in range(len(tlogger.coll)):
-            KEapps.append((fplus*np.exp(lamplus*Z)+fminus*np.exp(lamminus*Z)+KEinfapp)/qe)
-        #plt.subplot(1,4,2)
-        #plt.plot(collisions,KEapps)
-        dd = dict(a=a, b=b, c=c, h=h, k=k, l=l, lamplus=lamplus, lamminus = lamminus, cplus=cplus, cminus=cminus)
-        postd.update(dd)
-#        print(f'a={a}  b={b}  c={c}  h={h}  k={k}  l={l}  lamplus={lamplus}  lamminus={lamminus}  cplus={cplus}  cminus={cminus}')
-        postdictlist.append(postd)
+#         #plt.subplot(1,4,1)
+#         #plt.plot(tlogger.z,uapps)
+#         fplus = (lamplus-a)*cplus/b
+#         fminus = (lamminus-a)*cminus/b
+#         KEapps=[]
+#         KEinfapp=3/2*kB*Tg*mi/(mi-mg)
+#         for Z in range(len(tlogger.coll)):
+#             KEapps.append((fplus*np.exp(lamplus*Z)+fminus*np.exp(lamminus*Z)+KEinfapp)/qe)
+#         #plt.subplot(1,4,2)
+#         #plt.plot(collisions,KEapps)
+#         dd = dict(a=a, b=b, c=c, h=h, k=k, l=l, lamplus=lamplus, lamminus = lamminus, cplus=cplus, cminus=cminus)
+#         postd.update(dd)
+# #        print(f'a={a}  b={b}  c={c}  h={h}  k={k}  l={l}  lamplus={lamplus}  lamminus={lamminus}  cplus={cplus}  cminus={cminus}')
+#         postdictlist.append(postd)
     # section to verify we captured the logging information
     # aVlog = np.array([Vlogger.pdict[n] for n in Vlogger.pdict])
     # print('aVlog:')
@@ -547,4 +559,4 @@ if __name__ == '__main__':
 #    print(f'zmax = {zmax}')
 #    print(f'umaxapp: {umaxapp}')
 #    print(f'a={a}  b={b}  c={c}  h={h}  k={k}  l={l}  lamplus={lamplus}  lamminus={lamminus}  cplus={cplus}  cminus={cminus}')
-    print(postd)
+    # print(postd)

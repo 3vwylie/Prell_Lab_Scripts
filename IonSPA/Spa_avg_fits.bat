@@ -1,0 +1,8 @@
+cd /d "C:\Users\Austin\Documents\Grad School\ionspadev-main\ionspadev-main_260513_figure_out_Teff"
+python spa_avg_fit.py --db bsa_14_databases/BSA_14_1.sqlite3 bsa_14_inputs/BSA_14_CIU_1_a.txt --outfile bsa_14_fits.txt --plotfile bsa_14_fit_plots/BSA_14_CIU_1_a.png --plotmap none --tpoints 1000 --weighting combined
+python spa_avg_fit.py --db bsa_14_databases/BSA_14_2.sqlite3 bsa_14_inputs/BSA_14_CIU_2_a.txt --outfile bsa_14_fits.txt --plotfile bsa_14_fit_plots/BSA_14_CIU_2_a.png --plotmap none --tpoints 1000 --weighting combined
+python spa_avg_fit.py --db bsa_14_databases/BSA_14_1.sqlite3 bsa_14_inputs/BSA_14_CIU_1_b.txt --outfile bsa_14_fits.txt --plotfile bsa_14_fit_plots/BSA_14_CIU_1_b.png --plotmap none --tpoints 1000 --weighting combined
+python spa_avg_fit.py --db bsa_14_databases/BSA_14_2.sqlite3 bsa_14_inputs/BSA_14_CIU_2_b.txt --outfile bsa_14_fits.txt --plotfile bsa_14_fit_plots/BSA_14_CIU_2_b.png --plotmap none --tpoints 1000 --weighting combined
+python spa_avg_fit.py --db bsa_14_databases/BSA_14_1.sqlite3 bsa_14_inputs/BSA_14_CIU_1_c.txt --outfile bsa_14_fits.txt --plotfile bsa_14_fit_plots/BSA_14_CIU_1_c.png --plotmap none --tpoints 1000 --weighting combined
+python spa_avg_fit.py --db bsa_14_databases/BSA_14_2.sqlite3 bsa_14_inputs/BSA_14_CIU_2_c.txt --outfile bsa_14_fits.txt --plotfile bsa_14_fit_plots/BSA_14_CIU_2_c.png --plotmap none --tpoints 1000 --weighting combined
+PAUSE
