@@ -1,0 +1,13 @@
+{
+    "ion": {
+        "name": "16_2",
+        "mass": 66.46298,
+        "charge": 16,
+        "CCS": 53.27,
+        "num_atoms": 9270,
+        "T0": 300,
+        "hcprofname": "peptide",
+        "refdH": 95,
+        "refdS": -100
+    }
+}
