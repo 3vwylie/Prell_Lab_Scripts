@@ -1,0 +1,44 @@
+### Talapas
+
+PPO="SP_CONA_TET"; find . -type f -name "${PPO}*" -printf "%p\n" | sort  | while IFS= read -r file; do sha256sum $file; done &> ../../../../"${PPO}_checksum.txt"
+
+# PPO is "Phase Protein Oligomer, used for EPW's Pisa investigations
+# Linux
+#	";" 		# equivalent to the following command being on the line below in bash
+#	find . 		# find files in the current directory...
+#	-type f 	# that are file-type (not folders)
+#	-name "${PPO}*"	# with a name that matches the pattern in quotes. (* is wildcard, so the command will find all files that start with "SP_CONA_TET" -- be sure to use " and not ' if you are using variables!)
+#	-printf "%p\n" 	# prints the output formatted to have a newline (technically the format isn't needed, but the code was borrowed and it works, so why change it :)
+# 	| sort		# "|" is the pipe indicator, and the command to the right accepts the output of the command to the left as its input. The "sort" command sorts according to whatever "LC_COLLATE" is set to (you can check with the "locale" command, default seems to be "en_US.UTF-8"). you can also use arguments like -n to sort numerically, although EPW couldn't get sort to work the same on Linux and Windows Powershell, so he gave up and moved on.
+#	| while IFS= 	# Execute the following command with the piped input and IFS set to "" (empty string), which will prevent the field splitting of the input 
+# 	read -r file	# reads the files whose names were piped in, sets up $file as the variable to be used
+# 	do		# execute the following command each iteration of the while loop
+# 	sha256sum $file	# generate a 64-character checksum for the file. if even one bit is different, the checksum will be different. the command prints its output to the terminal, so we will catch that later. format is <checksum>  <filename>\n (there are two spaces "  " in between checksum and filename
+#	done		# exits the while loop
+# 	&> 		# writes the otherwise-printed-to-terminal output to a file with the name specified afterwards
+
+### Corner PC
+
+${PPO} = "SP_CONA_TET"; cd "E:\_TALAPAS_SPGPPISA_260708\TAR_${PPO}_UNHASHED"; @(Get-ChildItem -Path . -Filter "${PPO}*" | sort | ForEach-Object {$hash=(Get-FileHash $_.Name -Algorithm SHA256 | Select-Object Hash).Hash; $filename=$_.Name.Split("\")[-1]; "$($hash.ToLower())  ./${filename}"}) | Out-File -Encoding utf8 E:\_TALAPAS_SPGPPISA_260708\${PPO}_checksum_corner.txt
+
+${PPO}="SP_CONA_TET"; python .\check_checksum_sums.py --pretransfer ".\${PPO}_checksum_talapas.txt" --posttransfer ".\${PPO}_checksum_corner.txt" 
+
+
+# Powershell
+#	@()		# Everything within the parentheses will return an array
+#	Get-ChildItem	# find files within specified directory
+#	-Path .		# Specifies the directory for Get-ChildItem as the current directory. Change as needed.
+#	-Filter "*"	# same as -name above: specifies the pattern for finding files -Filter "${PPO}*" finds all files that start with SP_CONA_TET, using "*" as wildcard
+#	| sort |	# same as above, and "|" is still the piping symbol
+#	ForEach-Object	# applies the command in { } to all objects passed in
+#	Get-FileHash	# gets a file hash from the provided filename.
+#	$_.Name		# $_ is each object that is being piped in by the for loop. since everything is maintained as an array, we select only the file name with .Name
+#	-Algorithm 	# Argument specifying which algorithm we want to use. We use SHA256 for both the Linux and Powershell versions
+#	| Select-Object	# keep only certain columns of the array. We only want the Hash, because we already have the filename (Hash is the name of the column)
+# 	$hash=(...).Hash# extracts the output of the get-filename mini-pipeline's Hash column (the only column) and saves it to a variable for later
+#	.Split("\")[-1]	# $_.Name inherently contains the full path, which we don't want for our 1:1 comparison, so we separate by directory and keep only the filename itself
+# 	$(...)		# this has us printing the contents to a subshell
+#	.ToLower()	# the Linux version has lowercase letters in its hash, so we ensure parity for easier 1:1 comparison
+#	| Out-File	# saves the printed output to the file specified. -Encoding uft8 prevents utf16's extra x00s that it loves to add for seemingly no reason (these ruin the 1:1 comparison as well)
+
+That should be everything you need :)
